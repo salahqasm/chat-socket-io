@@ -1,0 +1,27 @@
+{
+  "name": "online-chat-io-server",
+  "version": "1.0.0",
+  "description": "online chat server powered by socket-io",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon --exec 'ts-node' src/index.ts",
+    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "serve": "node dist/index.js"
+  },
+  "author": "Salah Khalaf",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
