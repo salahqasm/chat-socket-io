@@ -1,30 +1,23 @@
-import express from 'express';
+import express, { Response, Request } from 'express';
 import http from 'http';
 import { Server, Socket } from "socket.io";
 import { PORT } from './config';
-import { Request, Response, NextFunction } from 'express';
-import { SocketEvents } from './interfaces/socket';
+import { SocketHandlerModel } from './models/socketMsgHandler';
 
 const app = express();
+app.use(express.json());
+
 const server = http.createServer(app);
 const io = new Server(server);
 
-app.use(express.json());
-
+const SocketHandler = new SocketHandlerModel(io)
 
 io.on("connection", (socket: Socket) => {
-  
-  socket.emit(SocketEvents.CONNECTION_STATUS, "Connected")
-
-  socket.on(SocketEvents.MSG, (data: string) => {
-    socket.emit(SocketEvents.MSG, data)
-  })
-
+  SocketHandler.welcome(socket)
 })
 
-
 //server health check endpoint
-app.get("/health", async (req: Request, res) => {
+app.get("/health", async (req: Request, res: Response) => {
   console.log("HealthCheck called")
   res.sendStatus(200)
 })

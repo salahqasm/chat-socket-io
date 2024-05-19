@@ -1,20 +1,37 @@
 
+import { Socket } from "socket.io";
 import { IRoom } from "../interfaces/room";
 
-class SocketRooms {
-    private rooms: string[] = []
+export class SocketRooms {
+    private rooms: IRoom = {}
 
     addRoom = (room: string): boolean => {
-        if (this.rooms.includes(room)) return false;
+        if (room in this.rooms) return false;
         console.log("** ", room, " added **")
-        this.rooms.push(room);
+        this.rooms[room] = {};
         return true
+    }    
+    
+    removeRoom = (room: string): boolean => {
+        if (!(room in this.rooms)) return false;
+        delete this.rooms[room];
+        return true;
     }
 
-    removeRoom = (room: string): boolean => {
-        console.log("** ", room, " removed **")
-        this.rooms = [...this.rooms.filter(pr => pr !== room)]
-        return true
+    addUser = (room: string, username: string, socket: Socket): boolean => {
+        if (!(room in this.rooms))
+            this.addRoom(room);    
+
+        if (username in this.rooms[room]) return false;
+        this.rooms[room][username] = socket;
+        return true;
+    }    
+
+    removeUser=(room:string,username:string):boolean=>{
+        if(!(room in this.rooms)) return false;
+        if(!(username in this.rooms[room])) return false;
+        delete this.rooms[room][username];
+        return true;
     }
 
     getRooms = (): typeof this.rooms => {
@@ -22,6 +39,6 @@ class SocketRooms {
     }
 
     getRoomsLength = (): number => {
-        return this.rooms.length;
+        return Object.keys(this.rooms).length;
     }
 }

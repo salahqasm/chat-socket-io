@@ -1,5 +1,8 @@
-export const SocketEvents = {
+export const SocketEventsEnum = {
+    CONNECTION_STATUS: "connectionStatus",
     MSG: "message",
-    CONNECTION_STATUS:"connectionStatus"
+    USER_JOINED: "userJoined",
+    USER_LEFT: "userLeft",
+    REQUEST:"request"
 }
 
