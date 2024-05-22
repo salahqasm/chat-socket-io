@@ -2,7 +2,7 @@ import express, { Response, Request } from 'express';
 import http from 'http';
 import { Server, Socket } from "socket.io";
 import { PORT } from './config';
-import { SocketHandlerModel } from './models/socketMsgHandler';
+import { SocketHandlerModel } from './models/socketHandler';
 
 const app = express();
 app.use(express.json());
@@ -14,6 +14,7 @@ const SocketHandler = new SocketHandlerModel(io)
 
 io.on("connection", (socket: Socket) => {
   SocketHandler.welcome(socket)
+  SocketHandler.eventHandler(socket)
 })
 
 //server health check endpoint

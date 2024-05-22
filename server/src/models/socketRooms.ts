@@ -25,7 +25,7 @@ export class SocketRooms {
         if (username in this.rooms[room]) return false;
         this.rooms[room][username] = socket;
         return true;
-    }    
+    }
 
     removeUser=(room:string,username:string):boolean=>{
         if(!(room in this.rooms)) return false;
