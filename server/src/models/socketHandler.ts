@@ -1,6 +1,7 @@
 import { Socket, Server as SocketIOServer } from "socket.io";
 import { SocketRooms } from "./socketRooms";
-import { ClientMessageDataType, ClientSocketEventEnum, JoinRoomDataType, LeaveRoomDataType, SocketEventsEnum } from "../interfaces/socket";
+import { ClientSocketEventEnum, SocketEventsEnum } from "../interfaces/socketEvent";
+import { IClientJoinRoom, IClientBaseMessage, IClientLeaveRoom, IClientMessage } from "../interfaces/clientEvent";
 
 export class SocketHandlerModel extends SocketRooms {
     private io: SocketIOServer;
@@ -16,6 +17,11 @@ export class SocketHandlerModel extends SocketRooms {
         socket.emit(SocketEventsEnum.AVAILABLE_ROOMS, availableRooms);
     }
 
+    sendAvailableRooms = () => {
+        const availableRooms = Object.entries(this.getRooms()).map(([key, value]) => ({ roomName: key, usersCount: Object.keys(value).length }));
+        this.io.emit(SocketEventsEnum.AVAILABLE_ROOMS, availableRooms)
+    }
+
     eventHandler = (socket: Socket) => {
         socket.on(ClientSocketEventEnum.CREATE_ROOM, (data) => this.handleCreateRoom(socket, data));
 
@@ -25,10 +31,10 @@ export class SocketHandlerModel extends SocketRooms {
 
         socket.on(ClientSocketEventEnum.MSG, (data) => this.handleMessage(data));
 
-        socket.on(ClientSocketEventEnum.DISCONNECT, () => this.disconnect(socket))
+        socket.on(ClientSocketEventEnum.DISCONNECT, () => this.handleDisconnect(socket))
     }
 
-    handleCreateRoom = (socket: Socket, data: JoinRoomDataType) => {
+    handleCreateRoom = (socket: Socket, data: IClientJoinRoom) => {
         const res = this.addRoom(data.roomName);
         socket.emit(SocketEventsEnum.INFO, { event: ClientSocketEventEnum.CREATE_ROOM, success: res })
         if (res) {
@@ -37,12 +43,12 @@ export class SocketHandlerModel extends SocketRooms {
         }
     }
 
-    handleJoin = (socket: Socket, data: JoinRoomDataType) => {
-        const res = this.addUser(data.roomName, data.username, socket);
+    handleJoin = (socket: Socket, data: IClientJoinRoom) => {
+        const res = this.addUser(data.roomName, data.userName, socket);
         if (res) {
             this.sendAvailableRooms();
             socket.join(data.roomName);
-            this.io.to(data.roomName).emit(SocketEventsEnum.USER_JOINED, data.username)
+            this.io.to(data.roomName).emit(SocketEventsEnum.USER_JOINED, data.userName)
 
             socket.emit(SocketEventsEnum.INFO, { event: ClientSocketEventEnum.JOIN_ROOM, success: true })
         } else {
@@ -51,18 +57,19 @@ export class SocketHandlerModel extends SocketRooms {
 
     }
 
-    handleLeave = (socket: Socket, data: LeaveRoomDataType) => {
-        const res = this.removeUser(data.roomName, data.username);
+    handleLeave = (socket: Socket, data: IClientLeaveRoom) => {
+        const res = this.removeUser(data.roomName, data.userName);
         socket.leave(data.roomName)
         socket.emit(SocketEventsEnum.INFO, { event: ClientSocketEventEnum.LEAVE_ROOM, sucess: res })
     }
 
-    handleMessage = (data: ClientMessageDataType) => {
-        this.io.to(data.roomName).emit(SocketEventsEnum.MSG, { from: data.username, message: data.message })
+    handleMessage = (data: IClientMessage) => {
+        this.io.to(data.roomName).emit(SocketEventsEnum.MSG, { from: data.userName, message: data.message })
     }
 
-    sendAvailableRooms = () => {
-        const availableRooms = Object.entries(this.getRooms()).map(([key, value]) => ({ roomName: key, usersCount: Object.keys(value).length }));
-        this.io.emit(SocketEventsEnum.AVAILABLE_ROOMS, availableRooms)
+    handleDisconnect = (socket: Socket) => {
+        this.disconnect(socket, this.io);
+        this.sendAvailableRooms();
     }
+
 }

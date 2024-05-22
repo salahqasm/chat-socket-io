@@ -1,6 +1,7 @@
 
-import { Socket } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { IRoom } from "../interfaces/room";
+import { SocketEventsEnum } from "../interfaces/socketEvent";
 
 export class SocketRooms {
     private rooms: IRoom = {}
@@ -41,16 +42,14 @@ export class SocketRooms {
     getRoomsLength = (): number => {
         return Object.keys(this.rooms).length;
     }
-    disconnect=(socket:Socket):boolean=>{
-        let room=Object.keys(this.rooms).filter(roomKey=>this.rooms[roomKey][socket.id])[0];
-        if(room){
+    disconnect = (socket: Socket, io: Server): boolean => {
+        let room = Object.keys(this.rooms).filter(roomKey => this.rooms[roomKey][socket.id])[0];
+        if (room) {
+            io.to(room).emit(SocketEventsEnum.USER_LEFT, this.rooms[room][socket.id].username)
             delete this.rooms[room][socket.id]
             return true;
-        }else{
+        } else {
             return false;
         }
-    }
-    resetRooms=()=>{
-        this.rooms={}
     }
 }

@@ -16,19 +16,3 @@ export const ClientSocketEventEnum = {
     MSG: "message",
     DISCONNECT:"disconnect"
 }
-
-export type JoinRoomDataType = {
-    roomName: string;
-    username: string;
-}
-
-export type LeaveRoomDataType = {
-    roomName: string;
-    username: string;
-}
-
-export type ClientMessageDataType={
-    roomName:string;
-    message:string;
-    username:string;
-}
