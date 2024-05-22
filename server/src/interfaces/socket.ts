@@ -10,6 +10,7 @@ export const SocketEventsEnum = {
 }
 
 export const ClientSocketEventEnum = {
+    CREATE_ROOM:"createRoom",
     JOIN_ROOM: "joinRoom",
     LEAVE_ROOM: "leaveRoom",
     MSG: "message",

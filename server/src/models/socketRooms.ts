@@ -10,8 +10,8 @@ export class SocketRooms {
         console.log("** ", room, " added **")
         this.rooms[room] = {};
         return true
-    }    
-    
+    }
+
     removeRoom = (room: string): boolean => {
         if (!(room in this.rooms)) return false;
         delete this.rooms[room];
@@ -20,16 +20,16 @@ export class SocketRooms {
 
     addUser = (room: string, username: string, socket: Socket): boolean => {
         if (!(room in this.rooms))
-            this.addRoom(room);    
+            return false;
 
-        if (username in this.rooms[room]) return false;
-        this.rooms[room][username] = socket;
+        if (socket.id in this.rooms[room]) return false;
+        this.rooms[room][socket.id] = { username: username, socket };
         return true;
     }
 
-    removeUser=(room:string,username:string):boolean=>{
-        if(!(room in this.rooms)) return false;
-        if(!(username in this.rooms[room])) return false;
+    removeUser = (room: string, username: string): boolean => {
+        if (!(room in this.rooms)) return false;
+        if (!(username in this.rooms[room])) return false;
         delete this.rooms[room][username];
         return true;
     }
@@ -40,5 +40,17 @@ export class SocketRooms {
 
     getRoomsLength = (): number => {
         return Object.keys(this.rooms).length;
+    }
+    disconnect=(socket:Socket):boolean=>{
+        let room=Object.keys(this.rooms).filter(roomKey=>this.rooms[roomKey][socket.id])[0];
+        if(room){
+            delete this.rooms[room][socket.id]
+            return true;
+        }else{
+            return false;
+        }
+    }
+    resetRooms=()=>{
+        this.rooms={}
     }
 }

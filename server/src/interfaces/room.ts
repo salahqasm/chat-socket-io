@@ -5,6 +5,9 @@ import { Socket } from "socket.io"
 
 export interface IRoom {
     [key: string]: {
-        [key: string]: Socket
+        [key: string]: {
+            username:string;
+            socket:Socket
+        };
     }
 }

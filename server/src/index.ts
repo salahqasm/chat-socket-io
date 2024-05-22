@@ -17,12 +17,12 @@ io.on("connection", (socket: Socket) => {
   SocketHandler.eventHandler(socket)
 })
 
+
 //server health check endpoint
 app.get("/health", async (req: Request, res: Response) => {
   console.log("HealthCheck called")
   res.sendStatus(200)
 })
-
 
 //start server
 server.listen(PORT, () => {
