@@ -11,13 +11,16 @@ export class SocketHandlerModel extends SocketRooms {
 
     welcome = (socket: Socket) => {
         socket.emit(SocketEventsEnum.CONNECTION_STATUS, { success: true });
-        const availableRooms = Object.entries(this.getRooms()).map(([key, value]) => ({ roomName: key, usersCount: Object.keys(value).length }));
-        socket.emit(SocketEventsEnum.AVAILABLE_ROOMS, availableRooms);
+        this.sendAvailableRooms(socket);
     }
 
-    sendAvailableRooms = () => {
+    sendAvailableRooms = (socket?:Socket) => {
         const availableRooms = Object.entries(this.getRooms()).map(([key, value]) => ({ roomName: key, usersCount: Object.keys(value).length }));
-        this.io.emit(SocketEventsEnum.AVAILABLE_ROOMS, availableRooms)
+        if(socket){
+            socket.emit(SocketEventsEnum.AVAILABLE_ROOMS, availableRooms);
+        }else{
+            this.io.emit(SocketEventsEnum.AVAILABLE_ROOMS, availableRooms)
+        }
     }
 
     eventHandler = (socket: Socket) => {
@@ -36,8 +39,8 @@ export class SocketHandlerModel extends SocketRooms {
         const res = this.addRoom(data.roomName);
         if (res) {
             socket.emit(SocketEventsEnum.INFO, { event: ClientSocketEventEnum.CREATE_ROOM, success: true });
-            this.sendAvailableRooms();
             this.handleJoin(socket, data);
+            this.sendAvailableRooms();
         } else {
             socket.emit(SocketEventsEnum.INFO, { event: ClientSocketEventEnum.CREATE_ROOM, success: false })
         }
@@ -58,9 +61,9 @@ export class SocketHandlerModel extends SocketRooms {
     }
 
     handleLeave = (socket: Socket, data: IClientLeaveRoom) => {
-        const res = this.removeUser(data.roomName, data.userName);
+        const res = this.removeUser(data.roomName, socket);
         socket.leave(data.roomName)
-        socket.emit(SocketEventsEnum.INFO, { event: ClientSocketEventEnum.LEAVE_ROOM, sucess: res })
+        socket.emit(SocketEventsEnum.INFO, { event: ClientSocketEventEnum.LEAVE_ROOM, sucess: true })
         this.handleEmptyRoom(data.roomName)
     }
 

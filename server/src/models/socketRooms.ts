@@ -24,6 +24,7 @@ export class SocketRooms {
     removeRoom = (room: string): boolean => {
         if (!(room in this.rooms)) return false;
         delete this.rooms[room];
+        console.log("-- ",room," deleted --")
         this.io.of("/").adapter.rooms.delete(room)
         return true;
     }
@@ -34,13 +35,15 @@ export class SocketRooms {
 
         if (socket.id in this.rooms[room]) return false;
         this.rooms[room][socket.id] = { username: username, socket };
+        console.log("! user joined: ", username,", room: ",room)
         return true;
     }
 
-    removeUser = (room: string, username: string): boolean => {
+    removeUser = (room: string, socket:Socket): boolean => {
         if (!(room in this.rooms)) return false;
-        if (!(username in this.rooms[room])) return false;
-        delete this.rooms[room][username];
+        if (!(socket.id in this.rooms[room])) return false;
+        console.log("! user left: ", this.rooms[room][socket.id].username,", room: ",room)
+        delete this.rooms[room][socket.id];
         return true;
     }
 
