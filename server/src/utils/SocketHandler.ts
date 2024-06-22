@@ -1,5 +1,5 @@
 import { Socket, Server as SocketIOServer } from "socket.io";
-import { SocketRooms } from "./socketRooms";
+import { SocketRooms } from "./SocketRooms";
 import { ClientSocketEventEnum, SocketEventsEnum } from "../interfaces/socketEvent";
 import { IClientJoinRoom, IClientLeaveRoom, IClientMessage } from "../interfaces/clientEvent";
 

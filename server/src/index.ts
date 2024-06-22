@@ -2,12 +2,16 @@ import express, { Response, Request } from 'express';
 import http from 'http';
 import { Server, Socket } from "socket.io";
 import { PORT } from './config';
-import { SocketHandlerModel } from './models/socketHandler';
-import { PrismaClient } from "@prisma/client"
-const pc = new PrismaClient();
+import { SocketHandlerModel } from './utils/SocketHandler';
+import { authRoutes } from './routes/auth';
+import { AuthMiddleware } from './controller/auth/middleware';
 
 const app = express();
 app.use(express.json());
+
+app.use(authRoutes)
+
+app.use(AuthMiddleware)
 
 const server = http.createServer(app);
 const io = new Server(server);
@@ -19,11 +23,6 @@ io.on("connection", (socket: Socket) => {
   SocketHandler.eventHandler(socket)
 })
 
-app.get("/test", async (req, res) => {
-  await pc.user.create({ data: { email: "a7a", password: "123", username: "123", fullName: "asd" } })
-  const data = await pc.user.findMany({ where: { email: "a7a" } });
-  res.json({ data })
-})
 //server health check endpoint
 app.get("/health", async (req: Request, res: Response) => {
   console.log("HealthCheck called")
