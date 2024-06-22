@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt"
 import { Response, Request } from 'express';
-import { TUser, UserModelService } from '../../database/User';
+import { TUser, UserModelService } from '../../model/User';
 
 export async function RegisterController(req: Request, res: Response) {
     try {
