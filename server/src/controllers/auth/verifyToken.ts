@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import { Response, Request } from 'express';
-import { TUser, UserModelService } from '../../model/User';
+import { TUser, UserModelService } from '../../models/User';
 import { JWT_SECRET } from "../../config";
 
 export async function VerifyTokenController(req: Request, res: Response) {

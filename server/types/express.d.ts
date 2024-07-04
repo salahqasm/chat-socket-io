@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { TUser } from '../src/model/User';
+import { TUser } from '../src/models/User';
 
 declare module 'express-serve-static-core' {
     interface Request {

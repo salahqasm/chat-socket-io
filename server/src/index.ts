@@ -4,7 +4,7 @@ import { Server, Socket } from "socket.io";
 import { PORT } from './config';
 import { SocketHandlerModel } from './utils/SocketHandler';
 import { authRoutes } from './routes/auth';
-import { AuthMiddleware } from './controller/auth/middleware';
+import { AuthMiddleware, SocketAuthMiddleware } from './middlewares/auth';
 
 const app = express();
 app.use(express.json());
@@ -15,8 +15,9 @@ app.use(AuthMiddleware)
 
 const server = http.createServer(app);
 const io = new Server(server);
-
 const SocketHandler = new SocketHandlerModel(io)
+
+io.use(SocketAuthMiddleware)
 
 io.on("connection", (socket: Socket) => {
   SocketHandler.welcome(socket)

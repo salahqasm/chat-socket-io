@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { Response, Request } from 'express';
-import { UserModelService } from '../../model/User';
+import { UserModelService } from '../../models/User';
 import { JWT_SECRET } from "../../config";
 
 export async function LoginController(req: Request, res: Response) {

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { LoginController } from "../controller/auth/login";
-import { RegisterController } from "../controller/auth/register";
-import { VerifyTokenController } from "../controller/auth/verifyToken";
+import { LoginController } from "../controllers/auth/login";
+import { RegisterController } from "../controllers/auth/register";
+import { VerifyTokenController } from "../controllers/auth/verifyToken";
 
 export const authRoutes = Router();
 
